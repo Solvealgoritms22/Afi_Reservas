@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="theme-color" content="#0f172a" />
+    <title>Fondo de Inversión — Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* MagicUI ShineBorder animation keyframes */
+      @keyframes shine {
+        0% {
+          background-position: 0% 0%;
+        }
+        50% {
+          background-position: 100% 100%;
+        }
+        to {
+          background-position: 0% 0%;
+        }
+      }
+
+      @keyframes shimmer-slide {
+        to {
+          transform: translate(calc(100cqw - 100%), calc(100cqh - 100%));
+        }
+      }
+
+      @keyframes spin-around {
+        0% {
+          transform: translateZ(0) rotate(0);
+        }
+        15%, 35% {
+          transform: translateZ(0) rotate(90deg);
+        }
+        65%, 85% {
+          transform: translateZ(0) rotate(270deg);
+        }
+        100% {
+          transform: translateZ(0) rotate(360deg);
+        }
+      }
+
+      .animate-shimmer-slide {
+        animation: shimmer-slide var(--speed) ease-in-out infinite alternate;
+      }
+
+      .animate-spin-around {
+        animation: spin-around calc(var(--speed) * 2) infinite linear;
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .motion-safe\:animate-shine { animation: shine var(--duration) linear infinite; }
+      }
+
+      /* Custom scrollbar styles */
+      .custom-scrollbar {
+        scrollbar-width: thin;
+        scrollbar-color: #475569 #1e293b;
+      }
+
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #1e293b;
+        border-radius: 4px;
+      }
+
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #475569;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+      }
+
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #64748b;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,325 @@
+[
+  {
+    "fecha":"2025-01-31",
+    "concepto":"Saldo anterior",
+    "mov_en_cuotas":510.401828,
+    "monto_en_usd":882525.17,
+    "valor_cuota":1729.079168,
+    "rentabilidad_periodo_pct":9.43,
+    "rentabilidad_anual_pct":10.8,
+    "mes":"2025-01"
+  },
+  {
+    "fecha":"2025-02-28",
+    "concepto":"Rendimiento Bruto",
+    "mov_en_cuotas":0.0,
+    "monto_en_usd":6121.94,
+    "valor_cuota":1741.073505,
+    "rentabilidad_periodo_pct":9.43,
+    "rentabilidad_anual_pct":10.8,
+    "mes":"2025-02"
+  },
+  {
+    "fecha":"2025-02-28",
+    "concepto":"Saldo Final",
+    "mov_en_cuotas":510.401828,
+    "monto_en_usd":888647.11,
+    "valor_cuota":1741.073505,
+    "rentabilidad_periodo_pct":9.43,
+    "rentabilidad_anual_pct":10.8,
+    "mes":"2025-02"
+  },
+  {
+    "fecha":"2025-02-28",
+    "concepto":"Saldo anterior",
+    "mov_en_cuotas":510.401828,
+    "monto_en_usd":888647.11,
+    "valor_cuota":1741.073505,
+    "rentabilidad_periodo_pct":8.26,
+    "rentabilidad_anual_pct":10.76,
+    "mes":"2025-02"
+  },
+  {
+    "fecha":"2025-03-31",
+    "concepto":"Rendimiento Bruto",
+    "mov_en_cuotas":0.0,
+    "monto_en_usd":6010.47,
+    "valor_cuota":1752.849524,
+    "rentabilidad_periodo_pct":8.26,
+    "rentabilidad_anual_pct":10.76,
+    "mes":"2025-03"
+  },
+  {
+    "fecha":"2025-03-31",
+    "concepto":"Saldo Final",
+    "mov_en_cuotas":510.401828,
+    "monto_en_usd":894657.58,
+    "valor_cuota":1752.849524,
+    "rentabilidad_periodo_pct":8.26,
+    "rentabilidad_anual_pct":10.76,
+    "mes":"2025-03"
+  },
+  {
+    "fecha":"2025-03-31",
+    "concepto":"Saldo anterior",
+    "mov_en_cuotas":510.401828,
+    "monto_en_usd":894657.58,
+    "valor_cuota":1752.849524,
+    "rentabilidad_periodo_pct":11.54,
+    "rentabilidad_anual_pct":10.97,
+    "mes":"2025-03"
+  },
+  {
+    "fecha":"2025-04-30",
+    "concepto":"Rendimiento Bruto",
+    "mov_en_cuotas":0.0,
+    "monto_en_usd":8069.41,
+    "valor_cuota":1768.65943,
+    "rentabilidad_periodo_pct":11.54,
+    "rentabilidad_anual_pct":10.97,
+    "mes":"2025-04"
+  },
+  {
+    "fecha":"2025-04-30",
+    "concepto":"Saldo Final",
+    "mov_en_cuotas":510.401828,
+    "monto_en_usd":902726.99,
+    "valor_cuota":1768.65943,
+    "rentabilidad_periodo_pct":11.54,
+    "rentabilidad_anual_pct":10.97,
+    "mes":"2025-04"
+  },
+  {
+    "fecha":"2025-04-30",
+    "concepto":"Saldo anterior",
+    "mov_en_cuotas":510.401828,
+    "monto_en_usd":902726.99,
+    "valor_cuota":1768.65943,
+    "rentabilidad_periodo_pct":7.76,
+    "rentabilidad_anual_pct":10.75,
+    "mes":"2025-04"
+  },
+  {
+    "fecha":"2025-05-31",
+    "concepto":"Rendimiento Bruto",
+    "mov_en_cuotas":0.0,
+    "monto_en_usd":5748.19,
+    "valor_cuota":1779.921507,
+    "rentabilidad_periodo_pct":7.76,
+    "rentabilidad_anual_pct":10.75,
+    "mes":"2025-05"
+  },
+  {
+    "fecha":"2025-05-31",
+    "concepto":"Saldo Final",
+    "mov_en_cuotas":510.401828,
+    "monto_en_usd":908475.1800000001,
+    "valor_cuota":1779.921507,
+    "rentabilidad_periodo_pct":7.76,
+    "rentabilidad_anual_pct":10.75,
+    "mes":"2025-05"
+  },
+  {
+    "fecha":"2025-05-31",
+    "concepto":"Saldo anterior",
+    "mov_en_cuotas":510.401828,
+    "monto_en_usd":908475.1800000001,
+    "valor_cuota":1779.921507,
+    "rentabilidad_periodo_pct":11.6,
+    "rentabilidad_anual_pct":10.82,
+    "mes":"2025-05"
+  },
+  {
+    "fecha":"2025-06-06",
+    "concepto":"Aportes inversionistas",
+    "mov_en_cuotas":50.475478,
+    "monto_en_usd":90000.0,
+    "valor_cuota":1783.044006,
+    "rentabilidad_periodo_pct":11.6,
+    "rentabilidad_anual_pct":10.82,
+    "mes":"2025-06"
+  },
+  {
+    "fecha":"2025-06-30",
+    "concepto":"Rendimiento Bruto",
+    "mov_en_cuotas":0.0,
+    "monto_en_usd":8889.45,
+    "valor_cuota":1796.051677,
+    "rentabilidad_periodo_pct":11.6,
+    "rentabilidad_anual_pct":10.82,
+    "mes":"2025-06"
+  },
+  {
+    "fecha":"2025-06-30",
+    "concepto":"Saldo Final",
+    "mov_en_cuotas":560.877307,
+    "monto_en_usd":1007364.63,
+    "valor_cuota":1796.051677,
+    "rentabilidad_periodo_pct":11.6,
+    "rentabilidad_anual_pct":10.82,
+    "mes":"2025-06"
+  },
+  {
+    "fecha":"2025-06-30",
+    "concepto":"Saldo anterior",
+    "mov_en_cuotas":560.877307,
+    "monto_en_usd":1007364.63,
+    "valor_cuota":1796.051677,
+    "rentabilidad_periodo_pct":11.89,
+    "rentabilidad_anual_pct":10.78,
+    "mes":"2025-06"
+  },
+  {
+    "fecha":"2025-07-31",
+    "concepto":"Rendimiento Bruto",
+    "mov_en_cuotas":0.0,
+    "monto_en_usd":9654.24,
+    "valor_cuota":1813.264383,
+    "rentabilidad_periodo_pct":11.89,
+    "rentabilidad_anual_pct":10.78,
+    "mes":"2025-07"
+  },
+  {
+    "fecha":"2025-07-31",
+    "concepto":"Saldo Final",
+    "mov_en_cuotas":560.877307,
+    "monto_en_usd":1017018.87,
+    "valor_cuota":1813.264383,
+    "rentabilidad_periodo_pct":11.89,
+    "rentabilidad_anual_pct":10.78,
+    "mes":"2025-07"
+  },
+  {
+    "fecha":"2025-07-31",
+    "concepto":"Saldo anterior",
+    "mov_en_cuotas":560.877307,
+    "monto_en_usd":1017018.87,
+    "valor_cuota":1813.264383,
+    "rentabilidad_periodo_pct":9.99,
+    "rentabilidad_anual_pct":10.71,
+    "mes":"2025-07"
+  },
+  {
+    "fecha":"2025-08-31",
+    "concepto":"Rendimiento Bruto",
+    "mov_en_cuotas":0.0,
+    "monto_en_usd":8258.79,
+    "valor_cuota":1827.989104,
+    "rentabilidad_periodo_pct":9.99,
+    "rentabilidad_anual_pct":10.71,
+    "mes":"2025-08"
+  },
+  {
+    "fecha":"2025-08-31",
+    "concepto":"Saldo Final",
+    "mov_en_cuotas":560.877307,
+    "monto_en_usd":1025277.66,
+    "valor_cuota":1827.989104,
+    "rentabilidad_periodo_pct":9.99,
+    "rentabilidad_anual_pct":10.71,
+    "mes":"2025-08"
+  },
+  {
+    "fecha":"2025-08-31",
+    "concepto":"Saldo anterior",
+    "mov_en_cuotas":560.877307,
+    "monto_en_usd":1025277.66,
+    "valor_cuota":1827.989104,
+    "rentabilidad_periodo_pct":8.41,
+    "rentabilidad_anual_pct":10.53,
+    "mes":"2025-08"
+  },
+  {
+    "fecha":"2025-09-30",
+    "concepto":"Rendimiento Bruto",
+    "mov_en_cuotas":0.0,
+    "monto_en_usd":6829.75,
+    "valor_cuota":1840.166013,
+    "rentabilidad_periodo_pct":8.41,
+    "rentabilidad_anual_pct":10.53,
+    "mes":"2025-09"
+  },
+  {
+    "fecha":"2025-09-30",
+    "concepto":"Saldo Final",
+    "mov_en_cuotas":560.877307,
+    "monto_en_usd":1032107.41,
+    "valor_cuota":1840.166013,
+    "rentabilidad_periodo_pct":8.41,
+    "rentabilidad_anual_pct":10.53,
+    "mes":"2025-09"
+  },
+  {
+    "fecha":"2025-09-30",
+    "concepto":"Saldo anterior",
+    "mov_en_cuotas":560.877307,
+    "monto_en_usd":1032107.41,
+    "valor_cuota":1840.166013,
+    "rentabilidad_periodo_pct":7.77,
+    "rentabilidad_anual_pct":10.16,
+    "mes":"2025-09"
+  },
+  {
+    "fecha":"2025-10-06",
+    "concepto":"Aportes inversionistas",
+    "mov_en_cuotas":54.279102,
+    "monto_en_usd":100000.0,
+    "valor_cuota":1842.329668,
+    "rentabilidad_periodo_pct":7.77,
+    "rentabilidad_anual_pct":10.16,
+    "mes":"2025-10"
+  },
+  {
+    "fecha":"2025-10-31",
+    "concepto":"Rendimiento Bruto",
+    "mov_en_cuotas":0.0,
+    "monto_en_usd":7103.93,
+    "valor_cuota":1851.905082,
+    "rentabilidad_periodo_pct":7.77,
+    "rentabilidad_anual_pct":10.16,
+    "mes":"2025-10"
+  },
+  {
+    "fecha":"2025-10-31",
+    "concepto":"Saldo Final",
+    "mov_en_cuotas":615.156409,
+    "monto_en_usd":1139211.3400000001,
+    "valor_cuota":1851.905082,
+    "rentabilidad_periodo_pct":7.77,
+    "rentabilidad_anual_pct":10.16,
+    "mes":"2025-10"
+  }
+  ,
+  {
+    "fecha": "2024-10-04",
+    "concepto": "Aportes inversionistas",
+    "mov_en_cuotas": 472.030643,
+    "monto_en_usd": 787000.00,
+    "valor_cuota": 1667.264638,
+    "mes": "2024-10"
+  },
+  {
+    "fecha": "2024-10-28",
+    "concepto": "Aportes inversionistas",
+    "mov_en_cuotas": 11.910587,
+    "monto_en_usd": 20000.00,
+    "valor_cuota": 1679.178312,
+    "mes": "2024-10"
+  },
+  {
+    "fecha": "2024-12-02",
+    "concepto": "Aportes inversionistas",
+    "mov_en_cuotas": 11.782041,
+    "monto_en_usd": 20000.00,
+    "valor_cuota": 1697.498758,
+    "mes": "2024-12"
+  },
+  {
+    "fecha": "2024-12-12",
+    "concepto": "Aportes inversionistas",
+    "mov_en_cuotas": 14.678556,
+    "monto_en_usd": 25000.00,
+    "valor_cuota": 1703.164695,
+    "mes": "2024-12"
+  }
+]
