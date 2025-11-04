@@ -590,30 +590,30 @@ function RowEditor({
   return (
     <tr className="mb-4 block overflow-hidden rounded-lg border-b border-slate-700 bg-slate-800/20 md:mb-0 md:table-row md:rounded-none md:bg-transparent">
       <td className="flex items-center justify-between gap-2 p-2 md:table-cell">
-        <span className="text-sm font-bold text-slate-400 md:hidden">
+        <span className="w-32 text-sm font-bold text-slate-400 md:hidden">
           Fecha
         </span>
         <CustomInput
-          type="date"
-          value={row.date}
-          onChange={(e) => onChange({ ...row, date: e.target.value })}
-          className="w-full min-w-[8rem]"
-          placeholder="yyyy-mm-dd"
-        />
+            type="date"
+            value={row.date}
+            onChange={(e) => onChange({ ...row, date: e.target.value })}
+            className="flex-1 min-w-[8rem]"
+            placeholder="yyyy-mm-dd"
+          />
       </td>
       <td className="flex items-center justify-between gap-2 p-2 md:table-cell">
-        <span className="text-sm font-bold text-slate-400 md:hidden">
+        <span className="w-32 text-sm font-bold text-slate-400 md:hidden">
           Concepto
         </span>
         <CustomInput
           value={row.concept}
           onChange={(e) => onChange({ ...row, concept: e.target.value })}
           placeholder="Concepto"
-          className="w-auto"
+          className="flex-1"
         />
       </td>
       <td className="flex items-center justify-between gap-2 p-2 md:table-cell">
-        <span className="text-sm font-bold text-slate-400 md:hidden">
+        <span className="w-32 text-sm font-bold text-slate-400 md:hidden">
           Mov. en Cuotas
         </span>
         <CustomInput
@@ -621,11 +621,11 @@ function RowEditor({
           step="0.000001"
           value={row.shares}
           onChange={(e) => onChange({ ...row, shares: Number(e.target.value) })}
-          className="w-auto"
+          className="flex-1"
         />
       </td>
       <td className="flex items-center justify-between gap-2 p-2 md:table-cell">
-        <span className="text-sm font-bold text-slate-400 md:hidden">
+        <span className="w-32 text-sm font-bold text-slate-400 md:hidden">
           Mov. en $
         </span>
         <CustomInput
@@ -633,12 +633,12 @@ function RowEditor({
           step="0.01"
           value={row.amount}
           onChange={(e) => onChange({ ...row, amount: Number(e.target.value) })}
-          className="w-auto"
+          className="flex-1"
           min="-999999999"
         />
       </td>
       <td className="flex items-center justify-between gap-2 p-2 md:table-cell">
-        <span className="text-sm font-bold text-slate-400 md:hidden">
+        <span className="w-32 text-sm font-bold text-slate-400 md:hidden">
           Valor de Cuota
         </span>
         <CustomInput
@@ -646,11 +646,11 @@ function RowEditor({
           step="0.000001"
           value={row.nav}
           onChange={(e) => onChange({ ...row, nav: Number(e.target.value) })}
-          className="w-auto"
+          className="flex-1"
         />
       </td>
       <td className="flex items-center justify-between gap-2 p-2 md:table-cell">
-        <span className="text-sm font-bold text-slate-400 md:hidden">
+        <span className="w-32 text-sm font-bold text-slate-400 md:hidden">
           Rentab. período (%)
         </span>
         <CustomInput
@@ -660,11 +660,11 @@ function RowEditor({
           onChange={(e) =>
             onChange({ ...row, periodReturnPct: Number(e.target.value) })
           }
-          className="w-auto"
+          className="flex-1"
         />
       </td>
       <td className="flex items-center justify-between gap-2 p-2 md:table-cell">
-        <span className="text-sm font-bold text-slate-400 md:hidden">
+        <span className="w-32 text-sm font-bold text-slate-400 md:hidden">
           Rentab. anual (%)
         </span>
         <CustomInput
@@ -674,17 +674,18 @@ function RowEditor({
           onChange={(e) =>
             onChange({ ...row, annualReturnPct: Number(e.target.value) })
           }
-          className="w-auto"
+          className="flex-1"
         />
       </td>
       <td className="flex items-center justify-between gap-2 p-2 md:table-cell">
-        <span className="text-sm font-bold text-slate-400 md:hidden">
+        <span className="w-[5.4rem] text-sm font-bold text-slate-400 md:hidden">
           Fondo
         </span>
         <CustomSelect
           value={row.fundId}
           options={fundOptions}
           onValueChange={(v) => onChange({ ...row, fundId: v })}
+          className="flex-1"
         />
       </td>
       <td className="flex justify-end p-2 md:table-cell">
@@ -858,7 +859,7 @@ function DataPage({
               <th className="p-2 text-left text-slate-300"></th>
             </tr>
           </thead>
-          <tbody className="block space-y-2 md:table-row-group md:space-y-0">
+          <tbody className="block space-y-4 md:table-row-group md:space-y-0">
             {paginatedRows.length === 0 ? (
               <tr className="block md:table-row">
                 <td

@@ -115,7 +115,7 @@ export const FUND_PRESETS: FundPreset[] = [
   {
     key: 'inmobiliario',
     name: 'Fondo Inmobiliario',
-    adminFeePct: 2,
+    adminFeePct: 1,
     icon: '/iconos/fondo_inmobiliario.svg',
     cover: '/iconos/fondo_inmobiliario.svg',
     description:
@@ -260,7 +260,7 @@ export const FUND_PRESETS: FundPreset[] = [
   {
     key: 'desarrollo',
     name: 'Fondo Desarrollo',
-    adminFeePct: 2,
+    adminFeePct: 3,
     icon: '/iconos/fondo_desarrollo.svg',
     cover: '/iconos/fondo_desarrollo.svg',
     description:
@@ -312,7 +312,7 @@ export const FUND_PRESETS: FundPreset[] = [
   {
     key: 'desarrollo2',
     name: 'Fondo Desarrollo II',
-    adminFeePct: 2,
+    adminFeePct: 1.5,
     icon: '/iconos/fondo_desarrollo_II.svg',
     cover: '/iconos/fondo_desarrollo_II.svg',
     description:
@@ -364,7 +364,7 @@ export const FUND_PRESETS: FundPreset[] = [
   {
     key: 'inmobiliario2',
     name: 'Fondo Inmobiliario II',
-    adminFeePct: 2,
+    adminFeePct: 2.5,
     icon: '/iconos/fondo_inmobiliario_II.svg',
     cover: '/iconos/fondo_inmobiliario_II.svg',
     description:
