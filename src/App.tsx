@@ -74,7 +74,7 @@ function formatMoney(n: number) {
   if (Math.abs(n) >= 1000000) {
     return n.toLocaleString(undefined, {
       style: "currency",
-      currency: "USD",
+      currency: "DOP",
       maximumFractionDigits: 0,
       notation: "compact",
       compactDisplay: "short",
@@ -84,7 +84,7 @@ function formatMoney(n: number) {
   // Para nÃºmeros normales, usar formato estÃ¡ndar
   return n.toLocaleString(undefined, {
     style: "currency",
-    currency: "USD",
+    currency: "DOP",
     maximumFractionDigits: 2,
   });
 }
@@ -94,7 +94,7 @@ function formatMoneyFull(n: number) {
   if (!Number.isFinite(n)) return "-";
   return n.toLocaleString(undefined, {
     style: "currency",
-    currency: "USD",
+    currency: "DOP",
     maximumFractionDigits: 2,
   });
 }
@@ -597,7 +597,8 @@ function RowEditor({
           type="date"
           value={row.date}
           onChange={(e) => onChange({ ...row, date: e.target.value })}
-          className="w-auto"
+          className="w-full min-w-[8rem]"
+          placeholder="yyyy-mm-dd"
         />
       </td>
       <td className="flex items-center justify-between gap-2 p-2 md:table-cell">
@@ -814,6 +815,8 @@ function DataPage({
               type="date"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
+              className="w-full min-w-[8rem]"
+              placeholder="yyyy-mm-dd"
             />
           </div>
           <div className="space-y-1">
@@ -822,6 +825,8 @@ function DataPage({
               type="date"
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
+              className="w-full min-w-[8rem]"
+              placeholder="yyyy-mm-dd"
             />
           </div>
           <div className="space-y-1">
@@ -1131,7 +1136,7 @@ export default function App() {
             <div className="text-sm text-slate-400">
               Comisión anual:{" "}
               <span className="font-medium text-[#3c84c2ff]">
-                {currentFund?.adminFeePct}%
+                {currentFund?.adminFeePct ?? 0}%
               </span>
               <div className="mt-1 text-xs text-slate-500">
                 Tiempo del fondo: {fundDurationText}
@@ -1372,8 +1377,8 @@ export default function App() {
               </div>
             </div>
             <p className="text-sm text-slate-300">
-              Este es un perfil de demostración. Puedes personalizar el nombre
-              guardando `userName` en LocalStorage.
+              Este es un perfil de demostración. Puedes personalizarlo poniéndote
+              en contacto con el desarrollador darlingf1998@gmail.com.
             </p>
             <div className="mt-4 flex justify-end">
               <button
@@ -1409,7 +1414,7 @@ export default function App() {
             <p className="mb-4 text-sm text-slate-400">
               Elige entre los fondos de inversiones disponibles.
             </p>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 overflow-auto max-h-[70vh]">
               {FUND_PRESETS.filter(
                 (p) =>
                   !funds.some((f) => getFundPresetKeyFromFund(f) === p.key),

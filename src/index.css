@@ -17,6 +17,28 @@
   background: #64748b; /* slate-500 */
 }
 
+/* Calendario en inputs type=date */
+input[type="date"] {
+  padding-right: 0.75rem; /* espacio interno para el icono */
+  color-scheme: dark; /* asegura colores oscuros */
+}
+
+/* Ocultar icono nativo en WebKit */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  display: none;
+  opacity: 0;
+}
+
+/* Ocultar icono nativo en Firefox */
+input[type="date"]::-moz-calendar-picker-indicator {
+  display: none;
+}
+
+/* Ocultar icono en Edge/IE legacy */
+input[type="date"]::-ms-expand {
+  display: none;
+}
+
 /* For Firefox */
 * {
   scrollbar-width: thin;

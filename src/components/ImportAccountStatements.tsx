@@ -90,7 +90,7 @@ export const ImportAccountStatements: React.FC<ImportAccountStatementsProps> = (
           Importa los datos históricos de los estados de cuenta del fondo mutuo
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6 p-6">
+      <CardContent className="space-y-6 p-6 overflow-auto max-h-[calc(100vh-200px)]">
         {/* Opción de sobrescritura */}
         <div className="flex items-center gap-2">
           <input 
