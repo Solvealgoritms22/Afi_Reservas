@@ -1,7 +1,11 @@
 # 🏦 AFI Reservas - Dashboard de Fondos de Inversión
 
 <div align="center">
-  <img src="/public/afi-reservas.png" alt="AFI Reservas Logo" width="200"/>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="/public/afi-reservas.png">
+    <source media="(prefers-color-scheme: light)" srcset="/public/afi-reservas-ligth.jpg">
+    <img src="/public/afi-reservas.png" alt="AFI Reservas Logo" width="200"/>
+  </picture>
   
   ### 📊 Dashboard Interactivo para la Gestión de Fondos de Inversión
   
