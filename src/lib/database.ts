@@ -108,7 +108,6 @@ class DatabaseManager {
     if (!this.db) throw new Error('Database not initialized');
 
     const stmt = this.db.prepare('SELECT * FROM funds');
-    const results = stmt.getAsObject({});
     const funds: Fund[] = [];
 
     while (stmt.step()) {
@@ -187,7 +186,7 @@ class DatabaseManager {
   getAllMovements(): Movement[] {
     if (!this.db) throw new Error('Database not initialized');
 
-    const stmt = this.db.prepare('SELECT * FROM movements ORDER BY date DESC');
+    const stmt = this.db.prepare('SELECT * FROM movements ORDER BY date ASC');
     const movements: Movement[] = [];
 
     while (stmt.step()) {
@@ -200,8 +199,8 @@ class DatabaseManager {
         shares: row.shares as number,
         amount: row.amount as number,
         nav: row.nav as number,
-        periodReturnPct: row.periodReturnPct as number || undefined,
-        annualReturnPct: row.annualReturnPct as number || undefined
+        periodReturnPct: (row.periodReturnPct as number) ?? undefined,
+        annualReturnPct: (row.annualReturnPct as number) ?? undefined
       });
     }
 
@@ -225,8 +224,8 @@ class DatabaseManager {
         shares: row.shares as number,
         amount: row.amount as number,
         nav: row.nav as number,
-        periodReturnPct: row.periodReturnPct as number || undefined,
-        annualReturnPct: row.annualReturnPct as number || undefined
+        periodReturnPct: (row.periodReturnPct as number) ?? undefined,
+        annualReturnPct: (row.annualReturnPct as number) ?? undefined
       });
     }
 
