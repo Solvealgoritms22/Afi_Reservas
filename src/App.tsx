@@ -1277,7 +1277,7 @@ export default function App() {
                   <img
                     src="/certification/certification.png"
                     alt="Certificación"
-                    className="h-14 w-auto object-contain"
+                    className="h-14 w-auto object-contain hidden"
                   />
                 </a>
               </div>
