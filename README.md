@@ -354,31 +354,12 @@ npm run build
 
 Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
 
-## 🆘 Soporte
-
-### Documentación Adicional
-- [Wiki del Proyecto](https://github.com/tu-usuario/afi-reservas/wiki)
-- [Documentación API](https://github.com/tu-usuario/afi-reservas/docs/api.md)
-- [Guía de Usuario](https://github.com/tu-usuario/afi-reservas/docs/user-guide.md)
-
-### Contacto
-- **Email**: soporte@afi-reservas.com
-- **Issues**: [GitHub Issues](https://github.com/tu-usuario/afi-reservas/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/tu-usuario/afi-reservas/discussions)
-
-## 🙏 Agradecimientos
-
-- AFI Reservas por confiar en este proyecto
-- Comunidad React por las excelentes herramientas
-- Contribuidores open source que hacen posible este ecosistema
-
 ---
 
 <div align="center">
   <p><strong>AFI Reservas Dashboard</strong> - Desarrollado con ❤️ por Darling Fajardo</p>
   <p>
     <a href="#">Volver al inicio</a> •
-    <a href="https://github.com/tu-usuario/afi-reservas">Repositorio GitHub</a> •
     <a href="https://darlingcv.dev/">Portafolio</a>
   </p>
 </div>
