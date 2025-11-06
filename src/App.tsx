@@ -38,6 +38,7 @@ import DashboardView from "@/features/dashboard/Dashboard";
 import DataPageView from "@/features/data/DataPage";
 import { formatDurationSince as formatDurationSinceUtil } from "@/lib/movements";
 import { Footer } from "./components/Footer";
+import { enableGlobalButtonHaptics } from "@/lib/haptics";
 
 const uuid = () =>
   typeof crypto !== "undefined" && (crypto as any).randomUUID
@@ -91,6 +92,12 @@ export default function App() {
   useEffect(() => {
     const t = setTimeout(() => setSplashDone(true), 2200); // ~2.2s
     return () => clearTimeout(t);
+  }, []);
+
+  // Haptics global para botones en dispositivos móviles (Android principalmente)
+  useEffect(() => {
+    const cleanup = enableGlobalButtonHaptics();
+    return cleanup;
   }, []);
 
   // Iniciar animación de KPIs justo después de finalizar el loading y el splash
