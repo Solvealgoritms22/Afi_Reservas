@@ -86,9 +86,20 @@
       .custom-scrollbar::-webkit-scrollbar-thumb:hover {
         background: #64748b;
       }
+
+      /* Evitar el "rubber band"/overscroll en móviles y asegurar fondo oscuro también en el html */
+      html {
+        background-color: #0f172a;
+        overscroll-behavior-y: none;
+        overscroll-behavior-x: none;
+      }
+      body {
+        overscroll-behavior-y: none;
+        overscroll-behavior-x: none;
+      }
     </style>
   </head>
-  <body class="bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800">
+  <body class="bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800 min-h-screen overflow-y-auto overscroll-y-none">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
