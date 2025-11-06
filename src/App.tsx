@@ -80,7 +80,13 @@ export default function App() {
   }, [userName]);
   // Splash mínimo para que el loading permanezca visible unos segundos
   const [splashDone, setSplashDone] = useState(false);
-  const [hasAnimatedOnce, setHasAnimatedOnce] = useState(false);
+  const [hasAnimatedOnce, setHasAnimatedOnce] = useState<boolean>(() => {
+    try {
+      return sessionStorage.getItem("kpiAnimatedOnce") === "1";
+    } catch {
+      return false;
+    }
+  });
   const [startKpiAnimation, setStartKpiAnimation] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setSplashDone(true), 2200); // ~2.2s
@@ -89,13 +95,11 @@ export default function App() {
 
   // Iniciar animación de KPIs justo después de finalizar el loading y el splash
   useEffect(() => {
-    if (!loading && splashDone) {
+    if (!loading && splashDone && !hasAnimatedOnce) {
       const t = setTimeout(() => setStartKpiAnimation(true), 200);
       return () => clearTimeout(t);
-    } else {
-      setStartKpiAnimation(false);
     }
-  }, [loading, splashDone]);
+  }, [loading, splashDone, hasAnimatedOnce]);
 
   // Establecer el fondo actual cuando se cargan los datos
   useEffect(() => {
@@ -318,7 +322,16 @@ export default function App() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="dashboard" className="mt-4">
-              <DashboardView rows={rowsOfFund} shouldAnimate={startKpiAnimation && !hasAnimatedOnce} onAnimated={() => setHasAnimatedOnce(true)} />
+              <DashboardView
+                rows={rowsOfFund}
+                shouldAnimate={startKpiAnimation && !hasAnimatedOnce}
+                onAnimated={() => {
+                  setHasAnimatedOnce(true);
+                  try {
+                    sessionStorage.setItem("kpiAnimatedOnce", "1");
+                  } catch {}
+                }}
+              />
             </TabsContent>
             <TabsContent value="data" className="mt-4">
               <DataPageView
