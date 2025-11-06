@@ -1027,14 +1027,14 @@ export default function App() {
       // Marca opcional para UI
       localStorage.setItem("lastLogoutAt", new Date().toISOString());
     } catch {}
-    toast.success("SesiÃ³n cerrada (simulaciÃ³n)");
+    toast.success("Sesion cerrada (simulacion)");
   };
 
-  // Eliminadas funciones de actualizaciÃ³n/eliminaciÃ³n del fondo (la secciÃ³n de configuraciÃ³n fue removida)
+  // Eliminadas funciones de actualizacion/eliminacion del fondo (la seccion de configuracion fue removida)
 
   if (loading || !splashDone) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800">
+      <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800">
         <div className="flex flex-col items-center gap-6">
           <img
             src="/afi-reservas.png"
