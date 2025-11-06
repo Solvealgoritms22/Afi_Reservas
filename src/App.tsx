@@ -73,7 +73,7 @@ const uuid = () =>
 function formatMoney(n: number) {
   if (!Number.isFinite(n)) return "-";
 
-  // Para nÃºmeros muy grandes, usar formato compacto
+  // Para numeros muy grandes, usar formato compacto
   if (Math.abs(n) >= 1000000) {
     return n.toLocaleString(undefined, {
       style: "currency",
@@ -84,7 +84,7 @@ function formatMoney(n: number) {
     });
   }
 
-  // Para nÃºmeros normales, usar formato estÃ¡ndar
+  // Para numeros normales, usar formato estandar
   return n.toLocaleString(undefined, {
     style: "currency",
     currency: "DOP",
@@ -330,13 +330,43 @@ function KPI({
   subtitle,
   tooltipValue,
   logic,
+  animateValue,
+  format,
+  durationMs = 1000,
 }: {
   title: string;
   value: string;
   subtitle?: string;
   tooltipValue?: string;
   logic?: string;
+  animateValue?: number;
+  format?: (n: number) => string;
+  durationMs?: number;
 }) {
+  const [display, setDisplay] = useState<string>(value);
+  useEffect(() => {
+    if (typeof animateValue !== "number" || !Number.isFinite(animateValue)) {
+      setDisplay(value);
+      return;
+    }
+    const start = performance.now();
+    const from = 0;
+    const to = animateValue;
+    const dur = Math.max(300, durationMs);
+    let raf = 0 as any;
+    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+    const step = (now: number) => {
+      const t = Math.min(1, (now - start) / dur);
+      const eased = easeOutCubic(t);
+      const curr = from + (to - from) * eased;
+      const text = format ? format(curr) : curr.toFixed(0);
+      setDisplay(text);
+      if (t < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+    // Reanimar cuando cambie el valor objetivo o el formateador
+  }, [animateValue, format, durationMs, value]);
   const card = (
     <div className="group relative rounded-2xl bg-slate-800">
       {logic && (
@@ -352,7 +382,7 @@ function KPI({
               {title}
             </div>
             <div className="break-words text-3xl font-bold leading-tight text-slate-300">
-              {value}
+              {display}
             </div>
             {subtitle && (
               <div className="mt-2 text-xs text-slate-500">{subtitle}</div>
@@ -370,7 +400,7 @@ function KPI({
   );
 }
 
-function Dashboard({ rows }: { rows: Movement[] }) {
+function Dashboard({ rows, shouldAnimate = false, onAnimated }: { rows: Movement[]; shouldAnimate?: boolean; onAnimated?: () => void }) {
   const {
     mensual,
     capitalActual,
@@ -394,12 +424,20 @@ function Dashboard({ rows }: { rows: Movement[] }) {
   // Para el porcentaje anual, usamos el capital invertido
   const pctAnualMoney = capitalInvertido * pctAnual;
 
+  // Marcar que ya se animó en este ciclo de vida (solo en primer render)
+  useEffect(() => {
+    if (shouldAnimate) onAnimated?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const kpis = [
     {
       title: "Capital invertido",
       value: formatMoney(capitalInvertido),
       subtitle: formatMoneyFull(capitalInvertido),
       logic: "Suma de todos los aportes realizados.",
+      animateValue: capitalInvertido,
+      format: (n: number) => formatMoney(n),
     },
     {
       title: "Último aporte",
@@ -408,40 +446,54 @@ function Dashboard({ rows }: { rows: Movement[] }) {
         ? new Date(ultimoAporte.date).toLocaleDateString()
         : undefined,
       logic: "Monto y fecha del último aporte registrado.",
+      animateValue: ultimoAporte ? ultimoAporte.amount : undefined,
+      format: (n: number) => formatMoney(n),
     },
     {
       title: "Rendimiento (Últ. mes)",
       value: formatMoney(rendimientoUltMes),
       logic: "Rendimiento generado en el último mes calendario.",
+      animateValue: rendimientoUltMes,
+      format: (n: number) => formatMoney(n),
     },
     {
       title: "Rendimiento total acum.",
       value: formatMoney(rendimientoTotalAcum),
       logic: "Suma de todos los rendimientos generados hasta la fecha.",
+      animateValue: rendimientoTotalAcum,
+      format: (n: number) => formatMoney(n),
     },
     {
       title: "Saldo final (bruto)",
       value: formatMoney(saldoFinal),
       subtitle: formatMoneyFull(saldoFinal),
       logic: "Saldo final antes de impuestos y comisiones.",
+      animateValue: saldoFinal,
+      format: (n: number) => formatMoney(n),
     },
     {
       title: "Prom. rentab. diaria",
       value: (avgDaily * 100).toFixed(3) + "%",
       subtitle: formatMoney(avgDailyMoney),
       logic: "Promedio de la rentabilidad diaria históricaa.",
+      animateValue: avgDaily * 100,
+      format: (n: number) => n.toFixed(3) + "%",
     },
     {
       title: "Prom. rentab. mensual",
       value: (pctMensual * 100).toFixed(2) + "%",
       subtitle: formatMoney(pctMensualMoney),
       logic: "Promedio de la rentabilidad mensual histórica.",
+      animateValue: pctMensual * 100,
+      format: (n: number) => n.toFixed(2) + "%",
     },
     {
       title: "Prom. rentab. anual",
       value: (pctAnual * 100).toFixed(2) + "%",
       subtitle: formatMoney(pctAnualMoney),
       logic: "Promedio de la rentabilidad anual histórica.",
+      animateValue: pctAnual * 100,
+      format: (n: number) => n.toFixed(2) + "%",
     },
   ];
 
@@ -456,6 +508,9 @@ function Dashboard({ rows }: { rows: Movement[] }) {
             subtitle={k.subtitle}
             tooltipValue={(k as any).tooltipValue}
             logic={(k as any).logic}
+            animateValue={shouldAnimate ? (k as any).animateValue : undefined}
+            format={(k as any).format}
+            durationMs={4000}
           />
         ))}
       </div>
@@ -954,10 +1009,22 @@ export default function App() {
   }, [userName]);
   // Splash mínimo para que el loading permanezca visible unos segundos
   const [splashDone, setSplashDone] = useState(false);
+  const [hasAnimatedOnce, setHasAnimatedOnce] = useState(false);
+  const [startKpiAnimation, setStartKpiAnimation] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setSplashDone(true), 2200); // ~2.2s
     return () => clearTimeout(t);
   }, []);
+
+  // Iniciar animación de KPIs justo después de finalizar el loading y el splash
+  useEffect(() => {
+    if (!loading && splashDone) {
+      const t = setTimeout(() => setStartKpiAnimation(true), 200);
+      return () => clearTimeout(t);
+    } else {
+      setStartKpiAnimation(false);
+    }
+  }, [loading, splashDone]);
 
   // Establecer el fondo actual cuando se cargan los datos
   useEffect(() => {
@@ -1180,7 +1247,7 @@ export default function App() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="dashboard" className="mt-4">
-              <Dashboard rows={rowsOfFund} />
+              <Dashboard rows={rowsOfFund} shouldAnimate={startKpiAnimation && !hasAnimatedOnce} onAnimated={() => setHasAnimatedOnce(true)} />
             </TabsContent>
             <TabsContent value="data" className="mt-4">
               <DataPage
