@@ -1063,66 +1063,69 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800">
-      <div className="mx-auto min-h-screen max-w-7xl space-y-6 p-6 justify-between flex flex-col flex-1">
-        <div>
-          <header className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <img
-                src="/afi-reservas.png"
-                alt="logo banco"
-                className="h-14 w-auto object-contain md:h-20"
-              />
-            </div>
-            <div className="flex items-center gap-3">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button className="flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-slate-200 hover:bg-slate-700">
-                    {avatarError ? (
-                      <User className="w-7 h-7 rounded-full bg-slate-600 p-1" />
-                    ) : (
-                      <img
-                        src={userAvatarUrl}
-                        alt={userName}
-                        className="w-7 h-7 rounded-full object-fill border border-slate-600"
-                        onError={() => setAvatarError(true)}
-                      />
-                    )}
-                    <span className="hidden md:inline max-w-[160px] truncate">{userName}</span>
-                    <ChevronDown className="w-4 h-4 opacity-70" />
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent
-                  side="bottom"
-                  align="end"
-                  className="w-56 border-slate-700 bg-slate-900 p-1"
+      {/* Header fijo siempre visible */}
+      <header className="fixed inset-x-0 top-0 z-40  bg-slate-900/70 backdrop-blur-md">
+        <div className="mx-auto max-w-7xl px-6 h-20 md:h-24 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <img
+              src="/afi-reservas.png"
+              alt="AFI Reservas"
+              className="h-14 w-auto object-contain md:h-20"
+            />
+          </div>
+          <div className="flex items-center gap-3">
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-slate-200 hover:bg-slate-700">
+                  {avatarError ? (
+                    <User className="w-7 h-7 rounded-full bg-slate-600 p-1" />
+                  ) : (
+                    <img
+                      src={userAvatarUrl}
+                      alt={userName}
+                      className="w-7 h-7 rounded-full object-fill border border-slate-600"
+                      onError={() => setAvatarError(true)}
+                    />
+                  )}
+                  <span className="hidden md:inline max-w-[160px] truncate">{userName}</span>
+                  <ChevronDown className="w-4 h-4 opacity-70" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                side="bottom"
+                align="end"
+                className="w-56 border-slate-700 bg-slate-900 p-1"
+              >
+                <button
+                  onClick={() => setShowUserInfo(true)}
+                  className="flex w-full items-center gap-2 rounded px-3 py-2 text-slate-200 hover:bg-slate-800"
+                >
+                  <Info className="h-4 w-4" />
+                  <span>Info</span>
+                </button>
+                <ConfirmDialog
+                  open={logoutConfirmOpen}
+                  onOpenChange={setLogoutConfirmOpen}
+                  onConfirm={handleLogout}
+                  title="Cerrar sesión"
+                  description="Es una simulación de cierre de sesión."
+                  confirmText="Cerrar sesión"
                 >
                   <button
-                    onClick={() => setShowUserInfo(true)}
-                    className="flex w-full items-center gap-2 rounded px-3 py-2 text-slate-200 hover:bg-slate-800"
+                    onClick={() => setLogoutConfirmOpen(true)}
+                    className="flex w-full items-center gap-2 rounded px-3 py-2 text-red-500 hover:bg-slate-800"
                   >
-                    <Info className="h-4 w-4" />
-                    <span>Info</span>
+                    <LogOut className="h-4 w-4" />
+                    <span>Cerrar sesion</span>
                   </button>
-                  <ConfirmDialog
-                    open={logoutConfirmOpen}
-                    onOpenChange={setLogoutConfirmOpen}
-                    onConfirm={handleLogout}
-                    title="Cerrar sesión"
-                    description="Es una simulación de cierre de sesión."
-                    confirmText="Cerrar sesión"
-                  >
-                    <button
-                      onClick={() => setLogoutConfirmOpen(true)}
-                      className="flex w-full items-center gap-2 rounded px-3 py-2 text-red-500 hover:bg-slate-800"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      <span>Cerrar sesion</span>
-                    </button>
-                  </ConfirmDialog>
-                </PopoverContent>
-              </Popover>
-            </div>
-          </header>
+                </ConfirmDialog>
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
+      </header>
+      <div className="mx-auto min-h-screen max-w-7xl space-y-6 p-6 pt-24 md:pt-28 justify-between flex flex-col flex-1">
+        <div>
 
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between space-y-6 py-6">
             <div className="grid items-center gap-2">
