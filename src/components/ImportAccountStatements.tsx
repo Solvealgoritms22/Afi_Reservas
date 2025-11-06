@@ -115,7 +115,7 @@ export const ImportAccountStatements: React.FC<ImportAccountStatementsProps> = (
                     Valor cuota: ${period.initialQuoteValue.toFixed(2)} → ${period.finalQuoteValue.toFixed(2)}
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="text-left sm:text-right">
                   <div className="text-sm font-medium text-green-400">
                     +{period.periodReturn}%
                   </div>
