@@ -103,6 +103,29 @@
         overscroll-behavior-y: none;
         overscroll-behavior-x: none;
       }
+      /* Ocultar las barras de scroll en móviles manteniendo el desplazamiento táctil */
+      @media (max-width: 768px) {
+        html, body {
+          -ms-overflow-style: none; /* IE/Edge */
+          scrollbar-width: none; /* Firefox */
+        }
+        html::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+          display: none; /* Chrome/Safari */
+          width: 0;
+          height: 0;
+        }
+        .custom-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+          overscroll-behavior: contain; /* evita que el scroll se propague al body */
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+          display: none;
+          width: 0;
+          height: 0;
+        }
+      }
     </style>
   </head>
   <body class="bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800 min-h-screen overflow-y-auto overscroll-y-none">
