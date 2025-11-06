@@ -25,6 +25,9 @@ import {
   X,
   Linkedin,
   Youtube,
+  Table,
+  Upload,
+  Layers,
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -698,7 +701,7 @@ function RowEditor({
         >
           <button
             onClick={() => setIsConfirmOpen(true)}
-            className="flex flex-shrink-0 items-center justify-center rounded-lg border border-red-500/30 bg-red-500/10 p-2 text-red-400"
+            className="flex flex-shrink-0 items-center justify-center rounded-lg border border-red-500/30 bg-red-500/10 p-2 text-red-400 hover:bg-red-500/20"
           >
             <Trash2 className="h-4 w-4" />
           </button>
@@ -794,7 +797,7 @@ function DataPage({
       {/* Barra de filtros */}
       <div className="rounded-xl border border-slate-700 bg-slate-900/50 p-4">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="w-50">
+          <div className="space-y-1">
             <CustomSelect
               label="Fondo"
               value={fundFilter}
@@ -1038,7 +1041,7 @@ export default function App() {
             alt="AFI Reservas"
             className="h-16 w-auto animate-pulse object-contain md:h-20"
           />
-          <div className="h-9 w-9 animate-spin rounded-full border-2 border-[#3677afff] border-t-transparent"></div>
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#3677afff] border-t-transparent"></div>
         </div>
       </div>
     );
@@ -1110,7 +1113,7 @@ export default function App() {
                   >
                     <button
                       onClick={() => setLogoutConfirmOpen(true)}
-                      className="flex w-full items-center gap-2 rounded px-3 py-2 text-red-300 hover:bg-slate-800"
+                      className="flex w-full items-center gap-2 rounded px-3 py-2 text-red-500 hover:bg-slate-800"
                     >
                       <LogOut className="h-4 w-4" />
                       <span>Cerrar sesion</span>
@@ -1148,10 +1151,30 @@ export default function App() {
 
           <Tabs defaultValue="dashboard" className="w-full">
             <TabsList className="border-slate-600 bg-slate-800">
-              <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-              <TabsTrigger value="data">Datos</TabsTrigger>
-              <TabsTrigger value="import">Importar</TabsTrigger>
-              <TabsTrigger value="settings">Fondos</TabsTrigger>
+              <TabsTrigger value="dashboard">
+                <span className="flex items-center gap-2">
+                  <LineChart className="h-4 w-4" />
+                  <span>Dashboard</span>
+                </span>
+              </TabsTrigger>
+              <TabsTrigger value="data">
+                <span className="flex items-center gap-2">
+                  <Table className="h-4 w-4" />
+                  <span>Datos</span>
+                </span>
+              </TabsTrigger>
+              <TabsTrigger value="import">
+                <span className="flex items-center gap-2">
+                  <Upload className="h-4 w-4" />
+                  <span>Importar</span>
+                </span>
+              </TabsTrigger>
+              <TabsTrigger value="settings">
+                <span className="flex items-center gap-2">
+                  <Layers className="h-4 w-4" />
+                  <span>Fondos</span>
+                </span>
+              </TabsTrigger>
             </TabsList>
             <TabsContent value="dashboard" className="mt-4">
               <Dashboard rows={rowsOfFund} />
@@ -1239,7 +1262,7 @@ export default function App() {
                           >
                             <button
                               title="Eliminar fondo"
-                              className="flex items-center justify-center rounded-lg p-2 text-red-400 transition-all duration-200 hover:text-red-300"
+                              className="flex items-center justify-center rounded-lg p-2 text-red-500 transition-all duration-200 hover:text-red-400"
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -1311,7 +1334,7 @@ export default function App() {
                     href="https://www.facebook.com/AFIReservas/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-full border border-slate-600 bg-slate-800/40 p-1.5 hover:bg-slate-800"
+                    className="rounded-full border border-slate-600 bg-slate-800/40 p-1.5 hover:bg-slate-700"
                   >
                     <Facebook className="h-4 w-4" />
                   </a>
@@ -1319,7 +1342,7 @@ export default function App() {
                     href="http://www.instagram.com/AfiReservas"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-full border border-slate-600 bg-slate-800/40 p-1.5 hover:bg-slate-800"
+                    className="rounded-full border border-slate-600 bg-slate-800/40 p-1.5 hover:bg-slate-700"
                   >
                     <Instagram className="h-4 w-4" />
                   </a>
@@ -1327,7 +1350,7 @@ export default function App() {
                     href="https://twitter.com/i/flow/login?redirect_after_login=%2FAfiReservas"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-full border border-slate-600 bg-slate-800/40 p-1.5 hover:bg-slate-800"
+                    className="rounded-full border border-slate-600 bg-slate-800/40 p-1.5 hover:bg-slate-700"
                   >
                     <img
                       src="/iconos/x.svg"
@@ -1339,7 +1362,7 @@ export default function App() {
                     href="https://www.linkedin.com/company/afireservas/posts/?feedView=all"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-full border border-slate-600 bg-slate-800/40 p-1.5 hover:bg-slate-800"
+                    className="rounded-full border border-slate-600 bg-slate-800/40 p-1.5 hover:bg-slate-700"
                   >
                     <Linkedin className="h-4 w-4" />
                   </a>
@@ -1347,7 +1370,7 @@ export default function App() {
                     href="https://www.youtube.com/@AFIReservas"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-full border border-slate-600 bg-slate-800/40 p-1.5 hover:bg-slate-800"
+                    className="rounded-full border border-slate-600 bg-slate-800/40 p-1.5 hover:bg-slate-700"
                   >
                     <Youtube className="h-4 w-4" />
                   </a>
@@ -1362,7 +1385,7 @@ export default function App() {
       {showUserInfo && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
-            className="absolute inset-0 bg-black/60"
+            className="absolute inset-0 backdrop-blur-sm md:backdrop-blur-md"
             onClick={() => setShowUserInfo(false)}
           ></div>
           <div className="relative z-10 mx-4 w-full max-w-md rounded-xl border border-slate-700 bg-slate-900 p-4">
@@ -1397,7 +1420,7 @@ export default function App() {
       {showAddFundDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
-            className="absolute inset-0 bg-black/60"
+            className="absolute inset-0 backdrop-blur-sm md:backdrop-blur-md"
             onClick={() => setShowAddFundDialog(false)}
           ></div>
           <div className="relative z-10 mx-4 w-full max-w-2xl rounded-xl border border-slate-700 bg-slate-900 p-4">
