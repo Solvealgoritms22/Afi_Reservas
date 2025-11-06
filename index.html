@@ -90,6 +90,12 @@
       /* Evitar el "rubber band"/overscroll en móviles y asegurar fondo oscuro también en el html */
       html {
         background-color: #0f172a;
+        /* Mismo gradiente que el body */
+        background-image: linear-gradient(to bottom right, #0f172a, #111827, #1e293b);
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-attachment: fixed;
+        min-height: 100%;
         overscroll-behavior-y: none;
         overscroll-behavior-x: none;
       }
