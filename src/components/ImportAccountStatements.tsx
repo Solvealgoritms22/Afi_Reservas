@@ -1,23 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { CustomFileInput } from './ui/CustomFileInput';
 import { useDatabase } from '../hooks/useDatabase';
-import { convertDataJsonToMovements, getPeriodReturnsFromJson, getRawJsonEntries } from '../lib/dataJson';
+import {
+  convertRawEntriesToMovements,
+  getPeriodReturnsFromEntries,
+  parseRawJsonEntriesFromText,
+} from '../lib/dataJson';
 import { Fund } from '../types';
+import { toast } from 'sonner';
 
 interface ImportAccountStatementsProps {
   currentFund: Fund;
   onImportComplete?: () => void;
+  isDemoAccount: boolean;
 }
 
 export const ImportAccountStatements: React.FC<ImportAccountStatementsProps> = ({
   currentFund,
-  onImportComplete
+  onImportComplete,
+  isDemoAccount,
 }) => {
   const [importing, setImporting] = useState(false);
   const [imported, setImported] = useState(false);
   const { createMovements, getMovementsByFund, deleteMovement } = useDatabase();
   const [replaceExisting, setReplaceExisting] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
 
   const [periodReturns, setPeriodReturns] = useState<Array<{
     period: string;
@@ -30,23 +40,55 @@ export const ImportAccountStatements: React.FC<ImportAccountStatementsProps> = (
   }>>([]);
   const [rawEntries, setRawEntries] = useState<Array<any>>([]);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const [pr, raw] = await Promise.all([
-          getPeriodReturnsFromJson('/dat.json'),
-          getRawJsonEntries('/dat.json'),
-        ]);
-        setPeriodReturns(pr);
-        setRawEntries(raw);
-      } catch (e) {
-        console.error('Error cargando data.json:', e);
-      }
-    })();
-  }, []);
+  // Sin carga automática: el usuario sube un archivo JSON
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setError(null);
+      setImported(false);
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setSelectedFileName(file.name);
+      const text = await file.text();
+      const entries = parseRawJsonEntriesFromText(text);
+      setRawEntries(entries);
+      const pr = getPeriodReturnsFromEntries(entries);
+      setPeriodReturns(pr);
+    } catch (err: any) {
+      console.error('Error leyendo archivo:', err);
+      setError('No se pudo leer el archivo. Asegúrate que es un JSON válido.');
+      setRawEntries([]);
+      setPeriodReturns([]);
+      setSelectedFileName(null);
+    }
+  };
+
+  const handleSelectFile = async (file: File | null) => {
+    try {
+      setError(null);
+      setImported(false);
+      if (!file) return;
+      setSelectedFileName(file.name);
+      const text = await file.text();
+      const entries = parseRawJsonEntriesFromText(text);
+      setRawEntries(entries);
+      const pr = getPeriodReturnsFromEntries(entries);
+      setPeriodReturns(pr);
+    } catch (err: any) {
+      console.error('Error leyendo archivo:', err);
+      setError('No se pudo leer el archivo. Asegúrate que es un JSON válido.');
+      setRawEntries([]);
+      setPeriodReturns([]);
+      setSelectedFileName(null);
+    }
+  };
 
   const handleImport = async () => {
     if (!currentFund) return;
+    if (isDemoAccount) {
+      toast.error("Esta cuenta no tiene permisos para realizar acciones");
+      return;
+    }
 
     setImporting(true);
     try {
@@ -58,12 +100,12 @@ export const ImportAccountStatements: React.FC<ImportAccountStatementsProps> = (
         }
       }
 
-      // Cargar y convertir data.json a movimientos
-      const movements = await convertDataJsonToMovements(currentFund.id, '/dat.json');
-      
+      // Convertir las entradas subidas a movimientos
+      const movements = convertRawEntriesToMovements(currentFund.id, rawEntries as any);
+
       // Importar los movimientos a la base de datos
       await createMovements(movements);
-      
+
       setImported(true);
       onImportComplete?.();
     } catch (error) {
@@ -73,7 +115,30 @@ export const ImportAccountStatements: React.FC<ImportAccountStatementsProps> = (
       setImporting(false);
     }
   };
-
+  if (!currentFund) {
+    return (
+      <Card className="w-full bg-slate-900 border border-slate-700">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-slate-100">
+            <span className="inline-flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+              </svg>
+              Importar Estados de Cuenta
+            </span>
+          </CardTitle>
+          <CardDescription className="text-slate-400">
+            Importa los datos históricos de los estados de cuenta del fondo mutuo
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6 p-6 overflow-auto max-h-[calc(100vh-200px)]">
+          <div className="p-4 bg-slate-800 rounded-lg border border-slate-700 text-sm text-slate-400">
+            Seleccione un fondo para poder importar los estados de cuenta.
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
   return (
     <Card className="w-full bg-slate-900 border border-slate-700">
       <CardHeader>
@@ -91,6 +156,24 @@ export const ImportAccountStatements: React.FC<ImportAccountStatementsProps> = (
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6 p-6 overflow-auto max-h-[calc(100vh-200px)]">
+        {/* Subida de archivo */}
+        <div className="space-y-2">
+          <h4 className="font-medium text-slate-200">Archivo a importar</h4>
+          <CustomFileInput
+            accept="application/json,.json"
+            buttonText="Elegir JSON"
+            placeholder="Ningún archivo seleccionado"
+            onFileSelected={handleSelectFile}
+            selectedFileName={selectedFileName}
+          />
+          <p className="text-xs text-slate-400">
+            Sube un archivo JSON con campos: <code>fecha</code>, <code>concepto</code>, <code>mov_en_cuotas</code>, <code>monto_en_usd</code>, <code>valor_cuota</code>, <code>mes</code>.
+          </p>
+          {error && (
+            <p className="text-xs text-red-400">{error}</p>
+          )}
+        </div>
+
         {/* Opción de sobrescritura */}
         <div className="flex items-center gap-2">
           <input 
@@ -125,6 +208,11 @@ export const ImportAccountStatements: React.FC<ImportAccountStatementsProps> = (
                 </div>
               </div>
             ))}
+            {(!periodReturns || periodReturns.length === 0) && (
+              <div className="p-4 bg-slate-800 rounded-lg border border-slate-700 text-sm text-slate-400">
+                No hay períodos para mostrar. Sube un archivo para ver el resumen.
+              </div>
+            )}
           </div>
         </div>
 
@@ -157,10 +245,10 @@ export const ImportAccountStatements: React.FC<ImportAccountStatementsProps> = (
         <div className="pt-4">
           <Button 
             onClick={handleImport}
-            disabled={importing || imported}
+            disabled={importing || imported || rawEntries.length === 0}
             className="w-full bg-slate-100 text-slate-800 rounded-xl px-4 py-2 hover:bg-slate-200 transition-colors"
           >
-            {importing ? 'Importando...' : imported ? 'Datos Importados' : 'Importar Estados de Cuenta'}
+            {importing ? 'Importando...' : imported ? 'Datos Importados' : rawEntries.length > 0 ? 'Importar Estados de Cuenta' : 'Selecciona un archivo'}
           </Button>
           {imported && (
             <p className="text-sm text-green-600 mt-2 text-center">

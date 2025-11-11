@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, Suspense } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Plus,
@@ -34,11 +34,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "./components/ui/popover";
-import DashboardView from "@/features/dashboard/Dashboard";
-import DataPageView from "@/features/data/DataPage";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+const DashboardView = React.lazy(() => import("@/features/dashboard/Dashboard"));
+const DataPageView = React.lazy(() => import("@/features/data/DataPage"));
 import { formatDurationSince as formatDurationSinceUtil } from "@/lib/movements";
 import { Footer } from "./components/Footer";
 import { enableGlobalButtonHaptics } from "@/lib/haptics";
+import { AuthGate, logout } from "@/features/auth/AuthGate";
+import { auth, db } from "@/lib/firebase";
+import { onIdTokenChanged } from "firebase/auth";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 
 const uuid = () =>
   typeof crypto !== "undefined" && (crypto as any).randomUUID
@@ -47,7 +52,7 @@ const uuid = () =>
 
 
 
-export default function App() {
+function AppContent() {
   const {
     funds,
     movements,
@@ -69,16 +74,9 @@ export default function App() {
   const [showUserInfo, setShowUserInfo] = useState(false);
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const [avatarError, setAvatarError] = useState(false);
-  const userName = useMemo(
-    () => localStorage.getItem("userName") || "Fajardo",
-    [],
-  );
-  const userAvatarUrl = useMemo(() => {
-    const custom = localStorage.getItem("userAvatarUrl");
-    if (custom && custom.trim()) return custom;
-    // Fallback avatar local
-    return "/avatars/fajardo.jpeg";
-  }, [userName]);
+  const [docIdAlias, setDocIdAlias] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
+  const [userAvatarUrl, setUserAvatarUrl] = useState<string>("/avatars/fajardo.jpeg");
   // Splash mínimo para que el loading permanezca visible unos segundos
   const [splashDone, setSplashDone] = useState(false);
   const [hasAnimatedOnce, setHasAnimatedOnce] = useState<boolean>(() => {
@@ -89,8 +87,14 @@ export default function App() {
     }
   });
   const [startKpiAnimation, setStartKpiAnimation] = useState(false);
+
+  const isDemoAccount = useMemo(() => docIdAlias === "001-1234567-8", [docIdAlias]);
+  const showPermissionError = () => {
+    toast.error("Esta cuenta no tiene permisos para realizar acciones");
+  };
+
   useEffect(() => {
-    const t = setTimeout(() => setSplashDone(true), 2200); // ~2.2s
+    const t = setTimeout(() => setSplashDone(true), 1000); // 1s
     return () => clearTimeout(t);
   }, []);
 
@@ -99,6 +103,54 @@ export default function App() {
     const cleanup = enableGlobalButtonHaptics();
     return cleanup;
   }, []);
+
+  // Obtener docId (derivado del email alias) para mostrar en el header
+  useEffect(() => {
+    const unsub = onIdTokenChanged(auth, async (u) => {
+      const email = u?.email || "";
+      const id = email ? email.split("@")[0] : "";
+      setDocIdAlias(id);
+      setUserName(u?.displayName || "");
+      setUserAvatarUrl(u?.photoURL || "/avatars/fajardo.jpeg");
+      
+      if (u) {
+        // Usar onSnapshot para escuchar cambios en tiempo real
+        const unsubSnapshot = onSnapshot(doc(db, "users", u.uid), (snap) => {
+          const data = snap.exists() ? (snap.data() as any) : null;
+          if (data) {
+            if (data.displayName) {
+              setUserName(data.displayName);
+            }
+            const fsUrl = data.photoURL;
+            if (typeof fsUrl === "string" && fsUrl.length > 10) {
+              setAvatarError(false);
+              setUserAvatarUrl(fsUrl);
+            }
+          }
+        });
+        return () => unsubSnapshot();
+      }
+    });
+    return () => unsub();
+  }, []);
+
+  // Si falla la carga del avatar, intentar recuperar desde Firestore como segundo intento
+  useEffect(() => {
+    if (!avatarError) return;
+    const u = auth.currentUser;
+    if (!u) return;
+    (async () => {
+      try {
+        const snap = await getDoc(doc(db, "users", u.uid));
+        const data = snap.exists() ? (snap.data() as any) : null;
+        const fsUrl = data?.photoURL;
+        if (typeof fsUrl === "string" && fsUrl.length > 10) {
+          setAvatarError(false);
+          setUserAvatarUrl(fsUrl);
+        }
+      } catch {}
+    })();
+  }, [avatarError]);
 
   // Iniciar animación de KPIs justo después de finalizar el loading y el splash
   useEffect(() => {
@@ -133,12 +185,20 @@ export default function App() {
 
   // Abrir selector de presets para crear fondo
   const addFund = () => {
+    if (isDemoAccount) {
+      showPermissionError();
+      return;
+    }
     setShowAddFundDialog(true);
   };
 
   // Utilidad para obtener la key de preset (reutiliza util compartido)
   const getPresetKeyFromFund = (f: Fund): string | undefined =>
     getFundPresetKeyFromFund(f);
+
+  // Preload de features pesadas para mejorar UX percibida
+  const preloadDashboard = () => import("@/features/dashboard/Dashboard");
+  const preloadDataPage = () => import("@/features/data/DataPage");
 
   const createFundFromPreset = async (key: string) => {
     const preset = FUND_PRESETS.find((p) => p.key === key);
@@ -169,14 +229,30 @@ export default function App() {
     setDeleteTarget(null);
   };
 
-  const handleLogout = () => {
-    // Simulacion de logout: no borra datos ni recarga
+  const handleLogout = async () => {
     setLogoutConfirmOpen(false);
     try {
-      // Marca opcional para UI
-      localStorage.setItem("lastLogoutAt", new Date().toISOString());
-    } catch {}
-    toast.success("Sesion cerrada (simulacion)");
+      await logout();
+      toast.success("Sesión cerrada");
+    } catch (e) {
+      toast.error("No se pudo cerrar sesión");
+    }
+  };
+
+  const wrappedCreateMovement: typeof createMovement = async (...args) => {
+    if (isDemoAccount) {
+      showPermissionError();
+      return;
+    }
+    return createMovement(...args);
+  };
+
+  const wrappedDeleteMovement: typeof deleteMovement = async (...args) => {
+    if (isDemoAccount) {
+      showPermissionError();
+      return;
+    }
+    return deleteMovement(...args);
   };
 
   // Eliminadas funciones de actualizacion/eliminacion del fondo (la seccion de configuracion fue removida)
@@ -231,12 +307,17 @@ export default function App() {
                   ) : (
                     <img
                       src={userAvatarUrl}
-                      alt={userName}
+                      alt={userName || "Darling Fajardo"}
                       className="w-7 h-7 rounded-full object-fill border border-slate-600"
                       onError={() => setAvatarError(true)}
                     />
                   )}
-                  <span className="hidden md:inline max-w-[160px] truncate">{userName}</span>
+                  <span className="hidden md:inline max-w-[100px] truncate">{userName || "Darling Fajardo"}</span>
+                  {/* {docIdAlias && (
+                    <span className="hidden md:inline rounded bg-slate-700 px-2 py-0.5 text-xs text-slate-200">
+                      {docIdAlias}
+                    </span>
+                  )} */}
                   <ChevronDown className="w-4 h-4 opacity-70" />
                 </button>
               </PopoverTrigger>
@@ -306,13 +387,13 @@ export default function App() {
               <TabsTrigger value="dashboard">
                 <span className="flex items-center gap-2">
                   <LineChart className="h-4 w-4" />
-                  <span>Dashboard</span>
+                  <span onMouseEnter={preloadDashboard} onTouchStart={preloadDashboard}>Dashboard</span>
                 </span>
               </TabsTrigger>
               <TabsTrigger value="data">
                 <span className="flex items-center gap-2">
                   <Table className="h-4 w-4" />
-                  <span>Datos</span>
+                  <span onMouseEnter={preloadDataPage} onTouchStart={preloadDataPage}>Datos</span>
                 </span>
               </TabsTrigger>
               <TabsTrigger value="import">
@@ -329,32 +410,67 @@ export default function App() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="dashboard" className="mt-4">
-              <DashboardView
-                rows={rowsOfFund}
-                shouldAnimate={startKpiAnimation && !hasAnimatedOnce}
-                onAnimated={() => {
-                  setHasAnimatedOnce(true);
-                  try {
-                    sessionStorage.setItem("kpiAnimatedOnce", "1");
-                  } catch {}
-                }}
-              />
+              <Suspense
+                fallback={
+                  <div className="rounded-xl border border-slate-700 bg-slate-900/50 p-6 text-slate-200">
+                    Cargando Dashboard...
+                  </div>
+                }
+              >
+                <ErrorBoundary
+                  fallback={
+                    <div className="rounded-xl border border-slate-700 bg-slate-900/50 p-6 text-slate-200">
+                      <div className="text-lg font-semibold">Error al cargar el Dashboard</div>
+                      <div className="text-sm text-slate-400">Intenta cambiar de pestaña o recargar.</div>
+                    </div>
+                  }
+                >
+                  <DashboardView
+                    rows={rowsOfFund}
+                    shouldAnimate={startKpiAnimation && !hasAnimatedOnce}
+                    onAnimated={() => {
+                      setHasAnimatedOnce(true);
+                      try {
+                        sessionStorage.setItem("kpiAnimatedOnce", "1");
+                      } catch {}
+                    }}
+                  />
+                </ErrorBoundary>
+              </Suspense>
             </TabsContent>
             <TabsContent value="data" className="mt-4">
-              <DataPageView
-                rows={movements}
-                currentFundId={currentFund?.id || ""}
-                funds={funds}
-                onAddRow={createMovement}
-                onUpdateRow={updateMovement}
-                onDeleteRow={deleteMovement}
-              />
+              <Suspense
+                fallback={
+                  <div className="rounded-xl border border-slate-700 bg-slate-900/50 p-6 text-slate-200">
+                    Cargando Datos...
+                  </div>
+                }
+              >
+                <ErrorBoundary
+                  fallback={
+                    <div className="rounded-xl border border-slate-700 bg-slate-900/50 p-6 text-slate-200">
+                      <div className="text-lg font-semibold">Error en la sección de Datos</div>
+                      <div className="text-sm text-slate-400">Intenta aplicar otro filtro o recargar.</div>
+                    </div>
+                  }
+                >
+                  <DataPageView
+                    rows={movements}
+                    currentFundId={currentFund?.id || ""}
+                    funds={funds}
+                    onAddRow={wrappedCreateMovement}
+                    onUpdateRow={updateMovement}
+                    onDeleteRow={wrappedDeleteMovement}
+                  />
+                </ErrorBoundary>
+              </Suspense>
             </TabsContent>
             <TabsContent value="import" className="mt-4">
               {currentFund && (
                 <ImportAccountStatements
                   currentFund={currentFund}
                   onImportComplete={() => reload()}
+                  isDemoAccount={isDemoAccount}
                 />
               )}
             </TabsContent>
@@ -412,22 +528,19 @@ export default function App() {
                           >
                             <Info className="h-4 w-4" />
                           </button>
-                          <ConfirmDialog
-                            open={deleteTarget?.id === f.id}
-                            onOpenChange={(open) =>
-                              setDeleteTarget(open ? f : null)
-                            }
-                            onConfirm={() => handleDeleteFund(f)}
+                          <button
                             title="Eliminar fondo"
-                            description={`¿Seguro que deseas eliminar "${f.name}"? Esta acción no se puede deshacer.`}
+                            onClick={() => {
+                              if (isDemoAccount) {
+                                showPermissionError();
+                                return;
+                              }
+                              setDeleteTarget(f);
+                            }}
+                            className="flex items-center justify-center rounded-lg p-2 text-red-500/80 transition-all duration-200 hover:bg-red-500/20 hover:text-red-400"
                           >
-                            <button
-                              title="Eliminar fondo"
-                              className="flex items-center justify-center rounded-lg p-2 text-red-500 transition-all duration-200 hover:text-red-400"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </ConfirmDialog>
+                            <Trash2 className="h-4 w-4" />
+                          </button>
                         </div>
                       </li>
                     );
@@ -458,11 +571,11 @@ export default function App() {
             <div className="mb-3 flex items-center gap-3">
               <img
                 src={userAvatarUrl}
-                alt={userName}
+                alt={userName || "Darling Fajardo"}
                 className="h-12 w-12 rounded-full border border-slate-700 object-cover"
               />
               <div>
-                <div className="font-semibold text-slate-100">{userName}</div>
+                <div className="font-semibold text-slate-100">{userName || "Darling Fajardo"}</div>
                 <div className="text-xs text-slate-400">Perfil de usuario</div>
               </div>
             </div>
@@ -543,5 +656,13 @@ export default function App() {
         onOpenChange={(o) => (!o ? setInfoTarget(null) : undefined)}
       />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthGate>
+      <AppContent />
+    </AuthGate>
   );
 }

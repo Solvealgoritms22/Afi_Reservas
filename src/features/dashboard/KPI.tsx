@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, memo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ShineBorder } from "@/components/ui/shine-border";
 import { InfoButton } from "@/components/InfoButton";
 import { KpiTooltip } from "@/components/KpiTooltip";
 
-export function KPI({
+function KPIInner({
   title,
   value,
   subtitle,
@@ -79,3 +79,6 @@ export function KPI({
     card
   );
 }
+
+// Memoizar para evitar re-renders innecesarios cuando las props no cambian
+export const KPI = memo(KPIInner);

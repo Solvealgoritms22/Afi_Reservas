@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import type { Movement, Fund } from "@/types";
 import { CustomSelect } from "@/components/CustomSelect";
 import { CustomInput } from "@/components/CustomInput";
@@ -74,7 +74,7 @@ export default function DataPage({
     { value: "Otro", label: "Otro" },
   ];
 
-  const addRow = () => {
+  const addRow = useCallback(() => {
     const targetFundId = fundFilter === "all" ? currentFundId : fundFilter;
     const newRow: Movement = {
       id: uuid(),
@@ -88,10 +88,10 @@ export default function DataPage({
       annualReturnPct: undefined,
     };
     onAddRow(newRow);
-  };
+  }, [fundFilter, currentFundId, onAddRow]);
 
-  const updateRow = (id: string, next: Movement) => onUpdateRow(next);
-  const deleteRow = (id: string) => onDeleteRow(id);
+  const updateRow = useCallback((id: string, next: Movement) => onUpdateRow(next), [onUpdateRow]);
+  const deleteRow = useCallback((id: string) => onDeleteRow(id), [onDeleteRow]);
 
   return (
     <div className="space-y-4">
@@ -133,7 +133,7 @@ export default function DataPage({
           <tbody className="block space-y-4 md:table-row-group md:space-y-0">
             {paginatedRows.length === 0 ? (
               <tr className="block md:table-row">
-                <td colSpan={9} className="flex h-32 items-center justify-center text-slate-400">
+                <td colSpan={9} className="h-32 text-center text-slate-400">
                   <p className="text-lg font-medium">No hay datos</p>
                 </td>
               </tr>

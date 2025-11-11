@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
 import { Fund, Movement } from '../types';
-import { getDatabase } from '../lib/database';
+import { getDatabase } from '../lib/firestoreDatabase';
 import { getFundPresetKeyFromFund, normalizeName } from '../fundPresets';
+import { auth } from '../lib/firebase';
 
 export const useDatabase = () => {
   const [funds, setFunds] = useState<Fund[]>([]);
@@ -29,7 +31,17 @@ export const useDatabase = () => {
   }, []);
 
   useEffect(() => {
-    reload();
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        reload();
+      } else {
+        // Evitar lecturas de Firestore sin autenticación
+        setLoading(false);
+        setFunds([]);
+        setMovements([]);
+      }
+    });
+    return () => unsub();
   }, [reload]);
 
   const withErrorHandling = useCallback(
@@ -58,7 +70,7 @@ export const useDatabase = () => {
 
         // Enforce unique fund type (preset). If preset not present, fallback to normalized name uniqueness among presets
         const newKey = getFundPresetKeyFromFund(fund);
-        const existingFunds = db.getAllFunds();
+        const existingFunds = await db.getAllFunds();
         const existsSameType = existingFunds.some((f) => {
           const k = getFundPresetKeyFromFund(f);
           if (newKey && k) return k === newKey;
@@ -69,7 +81,7 @@ export const useDatabase = () => {
           throw new Error('Ya tienes un fondo de este tipo. Solo se permite uno por tipo.');
         }
 
-        db.createFund(fund);
+        await db.createFund(fund);
         setFunds((prev) => [...prev, fund]);
       }),
     [withErrorHandling]
@@ -79,7 +91,7 @@ export const useDatabase = () => {
     (fund: Fund) =>
       withErrorHandling(async () => {
         const db = await getDatabase();
-        db.updateFund(fund);
+        await db.updateFund(fund);
         setFunds((prev) => prev.map((f) => (f.id === fund.id ? fund : f)));
       }),
     [withErrorHandling]
@@ -89,7 +101,7 @@ export const useDatabase = () => {
     (id: string) =>
       withErrorHandling(async () => {
         const db = await getDatabase();
-        db.deleteFund(id);
+        await db.deleteFund(id);
         setFunds((prev) => prev.filter((f) => f.id !== id));
         setMovements((prev) => prev.filter((m) => m.fundId !== id));
       }),
@@ -101,7 +113,7 @@ export const useDatabase = () => {
     (movement: Movement) =>
       withErrorHandling(async () => {
         const db = await getDatabase();
-        db.createMovement(movement);
+        await db.createMovement(movement);
         setMovements((prev) => [movement, ...prev]);
       }),
     [withErrorHandling]
@@ -111,7 +123,7 @@ export const useDatabase = () => {
     (movement: Movement) =>
       withErrorHandling(async () => {
         const db = await getDatabase();
-        db.updateMovement(movement);
+        await db.updateMovement(movement);
         setMovements((prev) =>
           prev.map((m) => (m.id === movement.id ? movement : m))
         );
@@ -123,7 +135,7 @@ export const useDatabase = () => {
     (id: string) =>
       withErrorHandling(async () => {
         const db = await getDatabase();
-        db.deleteMovement(id);
+        await db.deleteMovement(id);
         setMovements((prev) => prev.filter((m) => m.id !== id));
       }),
     [withErrorHandling]
@@ -133,8 +145,8 @@ export const useDatabase = () => {
     (movements: Movement[]) =>
       withErrorHandling(async () => {
         const db = await getDatabase();
-        db.createMovements(movements);
-        const allMovements = db.getAllMovements();
+        await db.createMovements(movements);
+        const allMovements = await db.getAllMovements();
         setMovements(allMovements);
       }),
     [withErrorHandling]
