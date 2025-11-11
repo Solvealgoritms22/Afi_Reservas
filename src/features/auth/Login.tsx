@@ -224,7 +224,7 @@ export default function Login() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="mx-auto max-w-xl space-y-5">
+            <form onSubmit={handleSubmit} className="mx-auto max-w-xl space-y-5 px-4">
               <div>
                 <label className="block text-sm text-slate-300">Documento de identidad</label>
                 <input
