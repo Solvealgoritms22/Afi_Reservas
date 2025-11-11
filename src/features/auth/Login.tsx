@@ -205,7 +205,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800">
+    <div className="min-h-screen w-full bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 overflow-hidden">
       <div className="mx-auto flex min-h-screen max-w-3xl items-center justify-center p-6">
         <Card className={`w-full border-slate-700/60 bg-slate-900/90 shadow-xl shadow-slate-900/30 transition-all duration-300 ease-out transform ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}>
           <CardHeader>
