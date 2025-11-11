@@ -27,6 +27,51 @@ function isIOS(): boolean {
   }
 }
 
+let audioCtx: AudioContext | null = null;
+let lastSoundAt = 0;
+function getAudioContext(): AudioContext | null {
+  try {
+    const Ctor = (window as any).AudioContext || (window as any).webkitAudioContext;
+    if (!Ctor) return null;
+    if (!audioCtx) audioCtx = new Ctor();
+    return audioCtx;
+  } catch {
+    return null;
+  }
+}
+
+function playClickSound(durationMs = 40, frequency = 1200, volume = 0.02): boolean {
+  try {
+    // sólo en móvil y rate-limit
+    if (!isLikelyMobile()) return false;
+    const now = Date.now();
+    if (now - lastSoundAt < 80) return false;
+    const ctx = getAudioContext();
+    if (!ctx) return false;
+    lastSoundAt = now;
+    // preparar nodos
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = frequency;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    const t0 = ctx.currentTime;
+    // envolvente corta
+    gain.gain.setValueAtTime(0, t0);
+    gain.gain.linearRampToValueAtTime(volume, t0 + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + durationMs / 1000);
+    osc.start(t0);
+    osc.stop(t0 + durationMs / 1000);
+    // iOS requiere resume dentro de gesto
+    // no esperamos la promesa, pero intentamos reanudar
+    (ctx as any).resume?.();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 let lastVibrateAt = 0;
 export function vibrateLight(durationMs = 12): boolean {
   try {
@@ -82,8 +127,12 @@ export function enableGlobalButtonHaptics() {
     }
     // opt-out con data-haptic="off"
     if ((el as any).dataset?.haptic === "off") return;
-    // vibra si es posible; si no, aplica un leve "bump" (fallback visual útil en iOS)
-    if (!vibrateLight(12)) bumpElement(el);
+    // vibra si es posible; si no, aplica un leve "bump" y sonido de click
+    const didVibrate = vibrateLight(12);
+    if (!didVibrate) {
+      bumpElement(el);
+      playClickSound(40, 1200, 0.02);
+    }
   };
   document.addEventListener("pointerdown", handler, { passive: true } as any);
   return () => document.removeEventListener("pointerdown", handler as any);

@@ -39,8 +39,7 @@ export default function Dashboard({ rows, shouldAnimate = false, onAnimated }: {
 
   useEffect(() => {
     if (shouldAnimate) onAnimated?.();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [shouldAnimate, onAnimated]);
 
   const kpis = [
     {
