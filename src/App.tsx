@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useState, Suspense } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Plus,
   Trash2,
   LineChart,
   Check,
@@ -14,7 +13,7 @@ import {
   Upload,
   Layers,
 } from "lucide-react";
- 
+
 import type { Fund, Movement } from "./types";
 import { useDatabase } from "./hooks/useDatabase";
 import { ImportAccountStatements } from "./components/ImportAccountStatements";
@@ -41,9 +40,7 @@ import { formatDurationSince as formatDurationSinceUtil } from "@/lib/movements"
 import { Footer } from "./components/Footer";
 import { enableGlobalButtonHaptics } from "@/lib/haptics";
 import { AuthGate, logout } from "@/features/auth/AuthGate";
-import { auth, db } from "@/lib/firebase";
-import { onIdTokenChanged } from "firebase/auth";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
 const uuid = () =>
   typeof crypto !== "undefined" && (crypto as any).randomUUID
@@ -73,10 +70,15 @@ function AppContent() {
   const [infoTarget, setInfoTarget] = useState<Fund | null>(null);
   const [showUserInfo, setShowUserInfo] = useState(false);
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
-  const [avatarError, setAvatarError] = useState(false);
-  const [docIdAlias, setDocIdAlias] = useState<string>("");
-  const [userName, setUserName] = useState<string>("");
-  const [userAvatarUrl, setUserAvatarUrl] = useState<string>("/avatars/fajardo.jpeg");
+
+  const {
+    userName,
+    userAvatarUrl,
+    avatarError,
+    setAvatarError,
+    isDemoAccount
+  } = useUserProfile();
+
   // Splash mínimo para que el loading permanezca visible unos segundos
   const [splashDone, setSplashDone] = useState(false);
   const [hasAnimatedOnce, setHasAnimatedOnce] = useState<boolean>(() => {
@@ -87,8 +89,6 @@ function AppContent() {
     }
   });
   const [startKpiAnimation, setStartKpiAnimation] = useState(false);
-
-  const isDemoAccount = useMemo(() => docIdAlias === "001-1234567-8", [docIdAlias]);
   const showPermissionError = () => {
     toast.error("Esta cuenta no tiene permisos para realizar acciones");
   };
@@ -103,54 +103,6 @@ function AppContent() {
     const cleanup = enableGlobalButtonHaptics();
     return cleanup;
   }, []);
-
-  // Obtener docId (derivado del email alias) para mostrar en el header
-  useEffect(() => {
-    const unsub = onIdTokenChanged(auth, async (u) => {
-      const email = u?.email || "";
-      const id = email ? email.split("@")[0] : "";
-      setDocIdAlias(id);
-      setUserName(u?.displayName || "");
-      setUserAvatarUrl(u?.photoURL || "/avatars/fajardo.jpeg");
-      
-      if (u) {
-        // Usar onSnapshot para escuchar cambios en tiempo real
-        const unsubSnapshot = onSnapshot(doc(db, "users", u.uid), (snap) => {
-          const data = snap.exists() ? (snap.data() as any) : null;
-          if (data) {
-            if (data.displayName) {
-              setUserName(data.displayName);
-            }
-            const fsUrl = data.photoURL;
-            if (typeof fsUrl === "string" && fsUrl.length > 10) {
-              setAvatarError(false);
-              setUserAvatarUrl(fsUrl);
-            }
-          }
-        });
-        return () => unsubSnapshot();
-      }
-    });
-    return () => unsub();
-  }, []);
-
-  // Si falla la carga del avatar, intentar recuperar desde Firestore como segundo intento
-  useEffect(() => {
-    if (!avatarError) return;
-    const u = auth.currentUser;
-    if (!u) return;
-    (async () => {
-      try {
-        const snap = await getDoc(doc(db, "users", u.uid));
-        const data = snap.exists() ? (snap.data() as any) : null;
-        const fsUrl = data?.photoURL;
-        if (typeof fsUrl === "string" && fsUrl.length > 10) {
-          setAvatarError(false);
-          setUserAvatarUrl(fsUrl);
-        }
-      } catch {}
-    })();
-  }, [avatarError]);
 
   // Iniciar animación de KPIs justo después de finalizar el loading y el splash
   useEffect(() => {
@@ -173,9 +125,9 @@ function AppContent() {
   // Duracion del fondo (desde el primer movimiento registrado hasta hoy)
   const fundStartISO = rowsOfFund.length
     ? rowsOfFund.reduce(
-        (min, m) => (m.date < min ? m.date : min),
-        rowsOfFund[0].date,
-      )
+      (min, m) => (m.date < min ? m.date : min),
+      rowsOfFund[0].date,
+    )
     : undefined;
   const fundDurationText = fundStartISO
     ? formatDurationSinceUtil(fundStartISO)
@@ -255,7 +207,6 @@ function AppContent() {
     return deleteMovement(...args);
   };
 
-  // Eliminadas funciones de actualizacion/eliminacion del fondo (la seccion de configuracion fue removida)
 
   if (loading || !splashDone) {
     return (
@@ -380,7 +331,7 @@ function AppContent() {
               </div>
             </div>
           </div>
-        
+
 
           <Tabs defaultValue="dashboard" className="w-full">
             <TabsList className="border-slate-600 bg-slate-800">
@@ -432,7 +383,7 @@ function AppContent() {
                       setHasAnimatedOnce(true);
                       try {
                         sessionStorage.setItem("kpiAnimatedOnce", "1");
-                      } catch {}
+                      } catch { }
                     }}
                   />
                 </ErrorBoundary>
@@ -555,7 +506,7 @@ function AppContent() {
             </TabsContent>
           </Tabs>
         </div>
-        
+
         {/* Footer corporativo */}
         <Footer />
       </div>
@@ -642,10 +593,10 @@ function AppContent() {
             {FUND_PRESETS.filter(
               (p) => !funds.some((f) => getFundPresetKeyFromFund(f) === p.key),
             ).length === 0 && (
-              <div className="py-6 text-center text-slate-400">
-                Ya agregaste todos los fondos predefinidos.
-              </div>
-            )}
+                <div className="py-6 text-center text-slate-400">
+                  Ya agregaste todos los fondos predefinidos.
+                </div>
+              )}
           </div>
         </div>
       )}
