@@ -151,7 +151,7 @@ export default function Login() {
           password.trim(),
         );
         // Asegurar que el token de Auth esté emitido antes de usar Storage
-        try { await cred.user.getIdToken(true); } catch {}
+        try { await cred.user.getIdToken(true); } catch { }
         // Generar data URL del avatar y guardarlo en Firestore (sin usar Storage)
         let photoURL: string | undefined = undefined;
         if (photoFile) {
@@ -236,7 +236,7 @@ export default function Login() {
                   aria-label="Documento de identidad"
                   className="mt-1 w-full rounded-md border border-slate-700 bg-slate-800 p-2.5 text-slate-100 placeholder:text-slate-500 transition-all duration-200 hover:border-slate-600 focus:border-[#3c84c2ff] focus:ring-2 focus:ring-[#3c84c2ff]/50 focus:outline-none"
                 />
-                
+
               </div>
               {mode === "signup" && (
                 <div>
@@ -278,20 +278,22 @@ export default function Login() {
                 {password && password.length < 6 && (
                   <div className="mt-1 text-xs text-red-400">Mínimo 6 caracteres.</div>
                 )}
-                <div className="mt-4 text-center text-sm text-slate-300 bg-slate-800/50 rounded-lg p-3 border border-slate-700/60">
-                  <p className="font-bold text-slate-100">Cuenta de Demostración</p>
-                  <p className="mt-2">
-                    <span className="font-semibold text-slate-400">Usuario:</span>{" "}
-                    <code className="text-amber-400 bg-slate-900 px-1.5 py-0.5 rounded">
-                      001-1234567-8
-                    </code>
-                  </p>
-                  <p>
-                    <span className="font-semibold text-slate-400">Contraseña:</span>{" "}
-                    <code className="text-amber-400 bg-slate-900 px-1.5 py-0.5 rounded">
-                      qwer1234
-                    </code>
-                  </p>
+                <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-1">
+                  <div className="text-center text-sm text-slate-300 bg-slate-800/50 rounded-lg p-3 border border-slate-700/60">
+                    <p className="font-bold text-slate-100">Cuenta Demo (Solo lectura)</p>
+                    <p className="mt-2">
+                      <span className="font-semibold text-slate-400">Usuario:</span>{" "}
+                      <code className="text-amber-400 bg-slate-900 px-1.5 py-0.5 rounded text-xs">
+                        001-1234567-8
+                      </code>
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-400">Pass:</span>{" "}
+                      <code className="text-amber-400 bg-slate-900 px-1.5 py-0.5 rounded text-xs">
+                        qwer1234
+                      </code>
+                    </p>
+                  </div>
                 </div>
                 <div className="mt-2 text-right hidden">
                   <button
@@ -302,7 +304,7 @@ export default function Login() {
                     ¿Olvidaste tu contraseña?
                   </button>
                 </div>
-              </div> 
+              </div>
               {mode === "signup" && (
                 <div>
                   <CustomFileInput
@@ -355,7 +357,7 @@ export default function Login() {
                   <button
                     type="button"
                     className="text-[#3c84c2ff] hover:underline"
-                     // onClick={() => setMode("signup")}
+                  // onClick={() => setMode("signup")}
                   >
                     ¿No tienes cuenta? Crear una nueva
                   </button>
