@@ -55,15 +55,15 @@ export function useAggregations(rows: Movement[]) {
     const map: Record<string, MonthAgg> = {};
     months.forEach(
       (m) =>
-        (map[m] = {
-          saldoInicial: 0,
-          aportes: 0,
-          rescates: 0,
-          rendimientos: 0,
-          comision: 0,
-          saldoFinalBruto: 0,
-          saldoFinalNeto: 0,
-        }),
+      (map[m] = {
+        saldoInicial: 0,
+        aportes: 0,
+        rescates: 0,
+        rendimientos: 0,
+        comision: 0,
+        saldoFinalBruto: 0,
+        saldoFinalNeto: 0,
+      }),
     );
 
     for (const r of sorted) {
@@ -95,18 +95,23 @@ export function useAggregations(rows: Movement[]) {
   const capitalActual = lastMonth ? byMonth[lastMonth].saldoFinalNeto : 0;
   const saldoFinal = lastMonth ? byMonth[lastMonth].saldoFinalBruto : 0;
 
-  const capitalInvertido = useMemo(
-    () => Object.values(byMonth).reduce((a, m) => a + m.aportes, 0),
-    [byMonth],
-  );
+  const capitalInvertido = useMemo(() => {
+    const totalAportes = Object.values(byMonth).reduce((a, m) => a + m.aportes, 0);
+    // Si el primer mes tiene un saldo inicial (proveniente de Saldo Anterior),
+    // lo consideramos como capital base para que los números cuadren mejor
+    // en visualizaciones con historial truncado.
+    const firstMonth = months[0];
+    const initialBalance = firstMonth ? byMonth[firstMonth].saldoInicial : 0;
+    return initialBalance + totalAportes;
+  }, [byMonth, months]);
 
   const ultimoAporte = useMemo(() => {
     const aportes = sorted.filter((r) => deriveType(r.concept) === "Aporte");
     return aportes.length
       ? {
-          date: aportes[aportes.length - 1].date,
-          amount: aportes[aportes.length - 1].amount,
-        }
+        date: aportes[aportes.length - 1].date,
+        amount: aportes[aportes.length - 1].amount,
+      }
       : undefined;
   }, [sorted]);
 
@@ -117,17 +122,29 @@ export function useAggregations(rows: Movement[]) {
   );
 
   const { avgDaily, annualPct } = useMemo(() => {
-    if (sorted.length < 2) return { avgDaily: 0, annualPct: 0 };
+    // Filtrar para usar solo un valor de cuota por fecha (el último registrado ese día)
+    // para evitar que múltiples movimientos el mismo día diluyan el promedio con días de retorno 0.
+    const uniqueDates = new Map<string, Movement>();
+    sorted.forEach((r) => {
+      if (r.nav > 0) {
+        uniqueDates.set(r.date, r);
+      }
+    });
+    const navHistory = Array.from(uniqueDates.values()).sort(
+      (a, b) => parseISO(a.date).getTime() - parseISO(b.date).getTime(),
+    );
+
+    if (navHistory.length < 2) return { avgDaily: 0, annualPct: 0 };
     let totalDays = 0;
     let logSum = 0;
-    for (let i = 1; i < sorted.length; i++) {
-      const prev = sorted[i - 1],
-        cur = sorted[i];
+    for (let i = 1; i < navHistory.length; i++) {
+      const prev = navHistory[i - 1],
+        cur = navHistory[i];
       const days = Math.max(
         1,
         Math.round(
           (parseISO(cur.date).getTime() - parseISO(prev.date).getTime()) /
-            86400000,
+          86400000,
         ),
       );
       const navPrev = Math.max(1e-9, prev.nav || 0);
